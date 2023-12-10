@@ -82,7 +82,5 @@ public class LoginCheckFilter implements Filter {
         //放行
         System.out.println("已登录");
         filterChain.doFilter(servletRequest, servletResponse);
-
-
     }
 }
