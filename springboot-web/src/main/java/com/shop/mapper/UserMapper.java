@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 public interface UserMapper
 {
     //查询用户是否存在
-    @Select("select * from user where username=#{username}")
+    @Select("select * from web.user where username=#{username}")
     public User selectuser(User user);
 
     //根据用户名和密码查询信息
@@ -15,20 +15,20 @@ public interface UserMapper
     public User getmessage(User user);
 
     //添加用户信息
-    @Insert("insert into user(username,password,email)"+
+    @Insert("insert into web.user(username,password,email)"+
             "values(#{username},#{password},#{email})")
     public void insertmessage(User user);
 
     //删除用户信息
-    @Delete("delete from user where username=#{username}")
+    @Delete("delete from web.user where username=#{username}")
     public void deleteaccount(User user);
 
     //修改用户信息
-    @Update("update user set name=#{name},gender=#{gender},email=#{email} where username=#{username}")
+    @Update("update web.user set name=#{name},gender=#{gender},email=#{email} where username=#{username}")
     public void updateaccount(User user);
 
     //修改用户密码
-    @Update("update user set password=#{password} where username=#{username}")
+    @Update("update web.user set password=#{password} where username=#{username}")
     public void updatepwd(User user);
 
     @Select("select email from web.user where username=#{username}")
