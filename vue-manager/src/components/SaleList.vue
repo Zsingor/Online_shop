@@ -100,7 +100,6 @@ export default {
       });
     },
     echartsInit() {
-      console.log(2)
       // 基于准备好的dom，初始化echarts实例
       var myChart = echarts.init(this.$refs.chart);
       myChart.setOption({
@@ -118,7 +117,7 @@ export default {
           }
         ]
       })
-    }
+    },
   },
   computed:{
     updateDataShow() {

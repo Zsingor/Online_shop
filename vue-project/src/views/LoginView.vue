@@ -41,6 +41,14 @@ export default {
   components:{
     ValidCode
   },
+  beforeRouteEnter(to, from, next)
+  {
+    next();
+    // 判断是否是从 /person 到 /login 的路由切换
+    if (from.path === '/person' && to.path === '/login') {
+      window.location.reload();
+    }
+  },
   data()
   {
     return{
@@ -67,7 +75,6 @@ export default {
     getCode(code){
       this.code=code
     },
-
     login()
     {
       this.$refs["loginRef"].validate((valid) => {
@@ -104,7 +111,19 @@ export default {
           }
         }
       });
+    },
+    handleWatchEnter(e) {
+      var key = window.event ? e.keyCode : e.which;
+      console.log(key);
+      if (key === 13) {
+        // 这里执行相应的行为动作
+        this.login()
+      }
     }
+  },
+  mounted()
+  {
+    document.addEventListener('keydown', this.handleWatchEnter);
   }
 }
 </script>

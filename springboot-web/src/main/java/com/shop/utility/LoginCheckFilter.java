@@ -71,6 +71,9 @@ public class LoginCheckFilter implements Filter {
                 System.out.println("验证成功");
             } catch (Exception e) {
                 System.out.println("验证错误");
+                e.printStackTrace();
+                StackTraceElement stackTraceElement= e.getStackTrace()[0];
+                System.out.println("系统出错，错误信息:"+e.toString()+" at "+stackTraceElement.getClassName()+"."+stackTraceElement.getMethodName()+":"+stackTraceElement.getLineNumber());
                 Result error=Result.error("NO_LOGIN");
                 //将对象转换为json文件并返回
                 String str=JSONObject.toJSONString(error);
