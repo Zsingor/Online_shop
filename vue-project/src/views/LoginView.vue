@@ -114,7 +114,6 @@ export default {
     },
     handleWatchEnter(e) {
       var key = window.event ? e.keyCode : e.which;
-      console.log(key);
       if (key === 13) {
         // 这里执行相应的行为动作
         this.login()
