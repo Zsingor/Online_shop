@@ -3,6 +3,7 @@ package com.shop.controller;
 import com.shop.entity.Result;
 import com.shop.entity.Sale;
 import com.shop.service.SaleService;
+import com.shop.utility.AutoLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ public class SaleController {
     private SaleService saleService;
 
     @PostMapping("/showsale")
+    @AutoLog(operate = "查看每日销售",identify = "管理员")
     public Result showsale()
     {
         List<Sale> data=saleService.showsale();
@@ -25,6 +27,7 @@ public class SaleController {
     }
 
     @PostMapping("/deletesale")
+    @AutoLog(operate = "查看每日销售",identify = "销售员")
     public Result deletesale(@RequestBody Sale sale)
     {
         int flag=saleService.deletesale(sale);

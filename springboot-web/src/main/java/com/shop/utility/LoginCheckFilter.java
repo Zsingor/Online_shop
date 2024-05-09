@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @WebFilter(urlPatterns = "/*")
 public class LoginCheckFilter implements Filter {
@@ -41,22 +44,38 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        //如果是登录或者注册请求则放行
-        if (url.equals("http://"+ip+":"+port+"/login") | url.equals("http://"+ip+":"+port+"/register")
-                | url.equals("http://"+ip+":"+port+"/managerlogin")| url.equals("http://"+ip+":"+port+"/managerregister")
-                | url.equals("http://"+ip+":"+port+"/goodsshow") | url.startsWith("http://"+ip+":"+port+"/download/")) {
+        //添加放行的url请求
+        Set<String> allowedUrls = new HashSet<>(Arrays.asList(
+                "http://" + ip + ":" + port + "/login",
+                "http://" + ip + ":" + port + "/register",
+                "http://" + ip + ":" + port + "/managerlogin",
+                "http://" + ip + ":" + port + "/managerregister",
+                "http://" + ip + ":" + port + "/saleslogin",
+                "http://" + ip + ":" + port + "/salesregister",
+                "http://" + ip + ":" + port + "/goodsshow",
+                "http://" + ip + ":" + port + "/showrecommend"
+        ));
+
+        //放行对应的请求
+        if (url.startsWith("http://" + ip + ":" + port + "/download/") || allowedUrls.stream().anyMatch(url::equals)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
+//        if (url.equals("http://"+ip+":"+port+"/login") | url.equals("http://"+ip+":"+port+"/register")
+//                | url.equals("http://"+ip+":"+port+"/managerlogin")| url.equals("http://"+ip+":"+port+"/managerregister")
+//                | url.equals("http://"+ip+":"+port+"/saleslogin")| url.equals("http://"+ip+":"+port+"/salesregister")
+//                | url.equals("http://"+ip+":"+port+"/goodsshow") | url.equals("http://"+ip+":"+port+"/showrecommend")
+//                | url.startsWith("http://"+ip+":"+port+"/download/")) {
+//            filterChain.doFilter(servletRequest, servletResponse);
+//            return;
+//        }
 
         //获取请求头中的令牌
         String token = req.getHeader("token");
-        System.out.println(token);
 
         //如果用户为未登录
         if (!StringUtils.hasLength(token))
         {
-            System.out.println("用户未登录");
             Result error=Result.error("NO_LOGIN");
             //将对象转换为json文件并返回
             String str=JSONObject.toJSONString(error);
@@ -71,9 +90,6 @@ public class LoginCheckFilter implements Filter {
                 System.out.println("验证成功");
             } catch (Exception e) {
                 System.out.println("验证错误");
-                e.printStackTrace();
-                StackTraceElement stackTraceElement= e.getStackTrace()[0];
-                System.out.println("系统出错，错误信息:"+e.toString()+" at "+stackTraceElement.getClassName()+"."+stackTraceElement.getMethodName()+":"+stackTraceElement.getLineNumber());
                 Result error=Result.error("NO_LOGIN");
                 //将对象转换为json文件并返回
                 String str=JSONObject.toJSONString(error);

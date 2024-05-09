@@ -3,9 +3,15 @@ package com.shop.mapper;
 import com.shop.entity.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper //在运行时，会自动生成该接口的实现类对象，并将该对象交给IOC容器管理
 public interface UserMapper
 {
+    //查询所有的用户信息
+    @Select("select username from web.user")
+    List<String> showuser();
+
     //查询用户是否存在
     @Select("select * from web.user where username=#{username}")
     public User selectuser(User user);
@@ -31,6 +37,7 @@ public interface UserMapper
     @Update("update web.user set password=#{password} where username=#{username}")
     public void updatepwd(User user);
 
+    //查找用户邮箱
     @Select("select email from web.user where username=#{username}")
     public String selectemail(String username);
 }

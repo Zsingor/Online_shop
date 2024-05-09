@@ -1,7 +1,6 @@
 package com.shop.service;
 
 import com.shop.entity.Manager;
-import com.shop.entity.User;
 
 public interface ManagerService {
     //管理员登录

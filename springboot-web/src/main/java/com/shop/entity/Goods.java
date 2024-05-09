@@ -13,4 +13,7 @@ public class Goods {
     private String description;
     private float price;
     private String mainimg;
+    private Integer salesid;
+    private String type;
+    private Integer number;
 }

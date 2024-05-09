@@ -1,26 +1,18 @@
 package com.shop.controller;
 
-import cn.hutool.core.io.FileUtil;
 import com.shop.entity.Result;
 import com.shop.entity.User;
 import com.shop.service.OrderService;
 import com.shop.service.UserService;
+import com.shop.utility.AutoLog;
 import com.shop.utility.JwtUtils;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-//@CrossOrigin
 @Slf4j
 @RestController
 public class UserController {
@@ -32,6 +24,7 @@ public class UserController {
 
     //用户登录
     @PostMapping( "/login")
+    @AutoLog(operate = "登录",identify = "用户")
     public Result login(@RequestBody User user)
     {
         User data=userService.login(user);
@@ -48,6 +41,7 @@ public class UserController {
 
     //用户注册
     @PostMapping("/register")
+    @AutoLog(operate = "注册",identify = "用户")
     public Result register(@RequestBody User user)
     {
         String flag=userService.register(user);
@@ -63,6 +57,7 @@ public class UserController {
 
     //用户查询
     @PostMapping( "/select")
+    @AutoLog(operate = "查询个人信息",identify = "用户")
     public Result select(@RequestBody User user)
     {
         User data=userService.select(user);
@@ -71,6 +66,7 @@ public class UserController {
 
     //用户注销
     @PostMapping("/delete")
+    @AutoLog(operate = "注销",identify = "用户")
     public Result delete(@RequestBody User user)
     {
         int flag=userService.delete(user);
@@ -87,6 +83,7 @@ public class UserController {
 
     //用户修改
     @PostMapping("/update")
+    @AutoLog(operate = "修改账户信息",identify = "用户")
     public Result update(@RequestBody User user)
     {
         int flag=userService.updatecount(user);
@@ -117,6 +114,7 @@ public class UserController {
 
     //用户密码修改
     @PostMapping("/updatepwd")
+    @AutoLog(operate = "修改密码",identify = "用户")
     public Result updatepwd(@RequestBody User user)
     {
         int flag=userService.updatepwd(user);
@@ -136,5 +134,4 @@ public class UserController {
     {
         return Result.success();
     }
-
 }

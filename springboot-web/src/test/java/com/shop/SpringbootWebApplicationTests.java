@@ -1,22 +1,27 @@
 package com.shop;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.shop.entity.*;
+import com.shop.mapper.BrowseMapper;
+import com.shop.service.BrowseService;
+import com.shop.service.GoodsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.security.Key;
 /*import java.sql.Date;*/
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-//@SpringBootTest
+@SpringBootTest
 class SpringbootWebApplicationTests {
+    @Autowired
+    private BrowseService browseService;
+    @Autowired
+    private GoodsService goodsService;
+    @Autowired
+    private BrowseMapper browseMapper;
 
     @Test
     void contextLoads() {
@@ -72,4 +77,23 @@ class SpringbootWebApplicationTests {
         System.out.println(expireDate);*/
     }
 
+    @Test
+    public void show()
+    {
+//        User user=new User();
+//        user.setUsername("root");
+//        List<Goods> data=goodsService.getrecommendGoods(user);
+//        System.out.println(data);
+//        List<Integer> data=browseMapper.showclickgoods();
+//        System.out.println(data);
+//        User user=new User();
+//        user.setUsername("");
+//        if(Objects.equals(user.getUsername(), ""))
+//        {
+//            System.out.println("hello");
+//        }
+//        else {
+//            System.out.println("err");
+//        }
+    }
 }

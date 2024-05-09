@@ -2,8 +2,8 @@ package com.shop.controller;
 
 import com.shop.entity.Manager;
 import com.shop.entity.Result;
-import com.shop.entity.User;
 import com.shop.service.ManagerService;
+import com.shop.utility.AutoLog;
 import com.shop.utility.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,9 @@ public class ManagerController {
     @Autowired
     private ManagerService managerService;
 
+    //管理员登录
     @PostMapping("/managerlogin")
+    @AutoLog(operate = "登录",identify = "管理员")
     public Result login(@RequestBody Manager manager)
     {
         Manager data=managerService.login(manager);
@@ -28,7 +30,7 @@ public class ManagerController {
         if(data!=null)
         {
             Map<String, Object> claims=new HashMap<>();
-            claims.put("managername",data.getManagername());
+            claims.put("username",data.getManagername());
             String token= JwtUtils.generateJWT(claims);
             return Result.success(token);
         }
@@ -37,6 +39,7 @@ public class ManagerController {
 
     //管理员注册
     @PostMapping("/managerregister")
+    @AutoLog(operate = "注册",identify = "管理员")
     public Result register(@RequestBody Manager manager)
     {
         String flag=managerService.register(manager);
@@ -52,6 +55,7 @@ public class ManagerController {
 
     //管理员注销
     @PostMapping("/managerdelete")
+    @AutoLog(operate = "注销",identify = "管理员")
     public Result delete(@RequestBody Manager manager)
     {
         int flag=managerService.delete(manager);

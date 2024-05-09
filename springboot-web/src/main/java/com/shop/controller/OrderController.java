@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.shop.entity.Order;
 import com.shop.entity.Result;
+import com.shop.entity.Sales;
 import com.shop.service.*;
+import com.shop.utility.AutoLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +53,9 @@ public class OrderController
         mailService.sendTextMailMessage(to,subject,text);
     }
 
+    //添加订单信息
     @PostMapping("/billing")
+    @AutoLog(operate = "购买商品",identify = "用户")
     public Result billing(@RequestBody List<Order> orderlist)
     {
         int flag=0;
@@ -74,20 +78,6 @@ public class OrderController
         }
     }
 
-    @PostMapping("/adduserorder")
-    public Result adduserorder(@RequestBody Order order)
-    {
-        int flag=orderService.addorder(order);
-        if(flag==1)
-        {
-            return Result.success();
-        }
-        else
-        {
-            return Result.error("添加失败");
-        }
-    }
-
     @PostMapping("/deleteorder")
     public Result deleteorder(@RequestBody Order order)
     {
@@ -102,7 +92,22 @@ public class OrderController
         }
     }
 
+    @PostMapping("/deletegoodsorder")
+    public Result deletegoodsorder(@RequestBody Order order)
+    {
+        int flag=orderService.deletegoodsorder(order);
+        if(flag==1)
+        {
+            return Result.success();
+        }
+        else
+        {
+            return Result.error("删除失败");
+        }
+    }
+
     @PostMapping("/selectorder")
+    @AutoLog(operate = "查看订单",identify = "管理员")
     public Result selectorder()
     {
         List<Order> data=orderService.selectorder();
@@ -117,11 +122,10 @@ public class OrderController
     }
 
     @PostMapping("/selectuserorder")
+    @AutoLog(operate = "查看订单",identify = "用户")
     public Result selectuserorder(@RequestBody Order order)
     {
         List<Order> data=orderService.selectuserorder(order);
-        System.out.println(123);
-        System.out.println(data);
         if(data!=null)
         {
             return Result.success(data);
@@ -129,6 +133,21 @@ public class OrderController
         else
         {
             return Result.error("查询失败");
+        }
+    }
+
+    @PostMapping("/selectsalesorder")
+    @AutoLog(operate = "查看订单",identify = "销售员")
+    public Result selectsalesorder(@RequestBody Sales sales)
+    {
+        List<Order> data=orderService.selectsalesorder(sales);
+        if(data!=null)
+        {
+            return Result.success(data);
+        }
+        else
+        {
+            return Result.error("获取信息失败");
         }
     }
 }

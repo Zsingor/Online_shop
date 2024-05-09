@@ -1,6 +1,7 @@
 package com.shop.service.impl;
 
 import com.shop.entity.Order;
+import com.shop.entity.Sales;
 import com.shop.mapper.GoodsMapper;
 import com.shop.mapper.OrderMapper;
 import com.shop.mapper.SaleMapper;
@@ -48,11 +49,29 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Override
+    public List<Order> selectsalesorder(Sales sales) {
+        return orderMapper.selectsalesorder(sales);
+    }
+
+    @Override
     public int deleteorder(Order order)
     {
         int flag;
         try {
             orderMapper.deleteorder(order);
+            flag=1;
+        }
+        catch (Exception error){
+            flag=0;
+        }
+        return flag;
+    }
+
+    @Override
+    public int deletegoodsorder(Order order) {
+        int flag;
+        try {
+            orderMapper.deletegoodsorder(order);
             flag=1;
         }
         catch (Exception error){
