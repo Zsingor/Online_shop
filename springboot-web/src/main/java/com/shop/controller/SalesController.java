@@ -32,7 +32,7 @@ public class SalesController {
         if(data!=null)
         {
             Map<String, Object> claims=new HashMap<>();
-            claims.put("username",data.getId());
+            claims.put("username",data.getId().toString());
             String token= JwtUtils.generateJWT(claims);
             return Result.success(token);
         }

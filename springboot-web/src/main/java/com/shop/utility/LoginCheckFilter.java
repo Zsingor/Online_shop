@@ -61,14 +61,6 @@ public class LoginCheckFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-//        if (url.equals("http://"+ip+":"+port+"/login") | url.equals("http://"+ip+":"+port+"/register")
-//                | url.equals("http://"+ip+":"+port+"/managerlogin")| url.equals("http://"+ip+":"+port+"/managerregister")
-//                | url.equals("http://"+ip+":"+port+"/saleslogin")| url.equals("http://"+ip+":"+port+"/salesregister")
-//                | url.equals("http://"+ip+":"+port+"/goodsshow") | url.equals("http://"+ip+":"+port+"/showrecommend")
-//                | url.startsWith("http://"+ip+":"+port+"/download/")) {
-//            filterChain.doFilter(servletRequest, servletResponse);
-//            return;
-//        }
 
         //获取请求头中的令牌
         String token = req.getHeader("token");

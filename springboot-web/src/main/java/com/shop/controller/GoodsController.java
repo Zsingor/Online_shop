@@ -29,7 +29,6 @@ public class GoodsController {
     private SalesService salesService;
 
     @PostMapping("/goodsshow")
-    @AutoLog(operate = "查看商品信息",identify = "管理员")
     public Result showgoods()
     {
         try {

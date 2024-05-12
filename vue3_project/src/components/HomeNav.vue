@@ -33,7 +33,7 @@
     <el-main>
       <el-carousel trigger="click" height="400px">
         <el-carousel-item v-for="item in carouselImg" :key="item.src">
-          <img :src=getImageUrl(item.img) class="bannerimg" alt="image"/>
+          <el-image :src=item.img class="bannerimg" alt="image" :fit='cover'/>
         </el-carousel-item>
       </el-carousel>
     </el-main>
@@ -42,15 +42,14 @@
 
 <script setup>
 import {ref} from 'vue';
-
 const carouselImg=ref([
   {
     link: "/detail?index=1001",
-    img: "../assets/banner1.jpg"
+    img: new URL("@/assets/banner1.jpg", import.meta.url)
   },
   {
     link: "/detail?index=1002",
-    img: "../assets/banner2.jpg"
+    img: new URL("@/assets/banner2.jpg", import.meta.url)
   }
 ])
 

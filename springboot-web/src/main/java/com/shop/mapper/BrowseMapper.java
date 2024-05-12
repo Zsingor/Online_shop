@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mapper
 public interface BrowseMapper {
-    @Select("select * from web.browsetime")
+    @Select("select * from web.browsetime order by operatetime desc ")
     List<BrowseTime> getbrowse();
 
     @Insert("insert into web.browsetime(username, goodsid, time, operatetime)"+

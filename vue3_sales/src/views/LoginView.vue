@@ -86,7 +86,7 @@ const login = () => {
     if (valid) {
       if (code.value.toLowerCase() === user.value.validcode.toLowerCase()) {
         request.post("/saleslogin", {
-          "id": user.value.id,
+          "id": parseInt(user.value.id),
           "password": user.value.password
         }).then(result => {
           if (result.code === 1) {

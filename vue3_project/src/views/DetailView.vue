@@ -7,7 +7,7 @@
             <el-carousel-item v-for="(item,index) in goods.carouselImg" :key="index">
               <el-image
                   style="width: 100%; height: 100%"
-                  :src=getImageUrl(item.img)
+                  :src="$baseUrl+`/download/${item.img}`"
                   :fit=cover></el-image>
             </el-carousel-item>
           </el-carousel>
@@ -28,7 +28,7 @@
       <div class="deetailimg">
         <el-image
             style="width: 100%; height: 100%"
-            :src=getImageUrl(goods.detailImg)
+            :src=goods.detailImg
             :fit=cover></el-image>
       </div>
     </div>
@@ -48,7 +48,7 @@ var goods=ref({
   id: 1001,
   name: "LightAir负氧离子发生器空气净化器除醛霾二手烟杀菌",
   description: "",
-  detailImg:"../assets/detail1.jpg",
+  detailImg:new URL("@/assets/detail1.jpg", import.meta.url),
   price: "200",
   skus: [
     {
@@ -69,7 +69,7 @@ var goods=ref({
       img: ""
     },
     {
-      img: "../assets/product2.jpg"
+      img: "product2.jpg"
     }
   ]
 })
@@ -160,7 +160,7 @@ onMounted(()=>{
     if(result.code===1)
     {
       good.value=result.data
-      goods.value.carouselImg[0]["img"]=baseUrl+`/download/${good.value.mainimg}`
+      goods.value.carouselImg[0]["img"]=good.value.mainimg
     }
     else {
       ElMessage.error("用户未登录")

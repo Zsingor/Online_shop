@@ -1,23 +1,28 @@
 # Online_shop
 
-**本项目为基于JavaWeb的电子商务网站，采用vue+springboot+mysql的前后端分离的开发架构。**
+**本项目为基于JavaWeb的电子商务网站，采用vue3+springboot+mysql的前后端分离的开发架构。**
 
 
 
 ## 一、测试参数
 
 1. 顾客
-   1. 网址：http://8.134.116.81:7000/
+   1. 网址：http://8.138.12.62:5100/
    2. 测试账户
       - 用户名：root
       - 密码：password
-2. 销售
-   1. 网址：http://8.134.116.81:7001/
+2. 管理者
+   1. 网址：http://8.138.12.62:5101/
    2. 测试账户
       - 用户名：root
       - 密码：password
+3. 销售员
+   1. 网址：http://8.138.12.62:5102/
+   2. 测试账户
+      - 用户名：100001
+      - 密码：12345678
 
-注：该网址的有效截止时间为2024/2/27
+注：该网址的有效截止时间为2024/7/9
 
 
 
@@ -70,14 +75,13 @@
 
    ```java
    public class JwtUtils {
-       //令牌持续时间为24小时
-       private static Date expireDate = new Date(System.currentTimeMillis() + 24*3600*1000);
        //加密协议
        private static String SECRET = "iuhuhknhuyguygnomnojmoijuhuygtyftyfytguoyguygtf";
    
        //生成jwt令牌
        public static String generateJWT(Map<String, Object> claims)
        {
+           Date expireDate = new Date(System.currentTimeMillis() + 24*3600*1000);
            String token=Jwts.builder()
                    .addClaims(claims)
                    .signWith(SignatureAlgorithm.HS256, SECRET)
@@ -93,12 +97,11 @@
                    .setSigningKey(SECRET)
                    .parseClaimsJws(token)
                    .getBody();
-           System.out.println(claims);
            return claims;
        }
    }
    ```
-
+   
 3. 过滤器（filter）的设置（utility/LoginCheckFilter）
 
    ```java
@@ -130,22 +133,30 @@
                return;
            }
    
-           //如果是登录或者注册请求则放行
-           if (url.equals("http://"+ip+":"+port+"/login") | url.equals("http://"+ip+":"+port+"/register")
-                   | url.equals("http://"+ip+":"+port+"/managerlogin")| url.equals("http://"+ip+":"+port+"/managerregister")
-                   | url.equals("http://"+ip+":"+port+"/goodsshow") | url.startsWith("http://"+ip+":"+port+"/download/")) {
+           //添加放行的url请求
+           Set<String> allowedUrls = new HashSet<>(Arrays.asList(
+                   "http://" + ip + ":" + port + "/login",
+                   "http://" + ip + ":" + port + "/register",
+                   "http://" + ip + ":" + port + "/managerlogin",
+                   "http://" + ip + ":" + port + "/managerregister",
+                   "http://" + ip + ":" + port + "/saleslogin",
+                   "http://" + ip + ":" + port + "/salesregister",
+                   "http://" + ip + ":" + port + "/goodsshow",
+                   "http://" + ip + ":" + port + "/showrecommend"
+           ));
+   
+           //放行对应的请求
+           if (url.startsWith("http://" + ip + ":" + port + "/download/") || allowedUrls.stream().anyMatch(url::equals)) {
                filterChain.doFilter(servletRequest, servletResponse);
                return;
            }
    
            //获取请求头中的令牌
            String token = req.getHeader("token");
-           System.out.println(token);
    
            //如果用户为未登录
            if (!StringUtils.hasLength(token))
            {
-               System.out.println("用户未登录");
                Result error=Result.error("NO_LOGIN");
                //将对象转换为json文件并返回
                String str=JSONObject.toJSONString(error);
@@ -290,7 +301,7 @@
 
 
 
-### 二、销售界面
+### 二、销售员界面
 
 1. 注册界面，销售的账号仅作为登录验证使用，不包含额外信息的添加。
 
@@ -320,7 +331,7 @@
 
 1. 顾客的用户名是唯一的，无法更改与同名，仅在注册时可设置，其余信息包括邮箱、密码等均可后续在个人中心中更改。销售的用户名也是唯一的，但销售的账户仅做登录验证使用，无法修改信息，但是可注销。
 2. 登录验证的有效期是 **24** 小时，超过24小时候需要重新登录。
-3. 服务器的运行日期为从 **2023/12/9** 开始的三个月，超出这段时间后网站将无法被访问，直到将来再配置服务器。
+3. 服务器的运行日期为从 **2024/5/9** 开始的两个月，超出这段时间后网站将无法被访问，直到将来再配置服务器。
 4. 商品的编号作为商品的唯一标识符，无法重复和被修改，仅可在添加商品时设置。
 5. 商品的图片为商品的主展示图，其余的相关图片，例如顾客界面的商品详情页中的轮播图和详情图均为系统默认。
 6. 顾客界面主页的轮播图仅为展示用，无法进行页面跳转，且轮播区左侧的菜单栏的跳转连接均为统一界面。

@@ -20,7 +20,7 @@ public class BrowseController {
     private BrowseService browseService;
 
     @PostMapping("/getbrowse")
-    @AutoLog(operate = "查看操作日志",identify = "管理员")
+    @AutoLog(operate = "查看浏览日志",identify = "管理员")
     public Result getbrowse()
     {
         try {

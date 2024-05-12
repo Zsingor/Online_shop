@@ -33,37 +33,37 @@ public class LogAspect {
             Result result=(Result) joinPoint.proceed();
 
             //操作内容
-//            String operate=autoLog.operate();
-//
-//            //操作者身份
-//            String identify=autoLog.identify();
-//
-//            //操作时间
-//            Date time=new Date();
-//            Timestamp operatetime = new Timestamp(time.getTime());
-//
-//            HttpServletRequest request= ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-//            //操作ip
-//            String ip=getIp(request);
-//
-//            //操作姓名
-//            String userid="";
-//            Claims claims = null;
-//            String token = request.getHeader("token");
-//            if(token!=null)
-//            {
-//                claims=JwtUtils.parseJWT(token);
-//                userid=claims.get("username", String.class);
-//            }
-//            else
-//            {
-//                token= (String) result.getData();
-//                claims=JwtUtils.parseJWT(token);
-//                userid=claims.get("username", String.class);
-//            }
-//
-//            OperationLog operationLog=new OperationLog(null,userid,identify,operate,ip,operatetime);
-//            logService.addlog(operationLog);
+            String operate=autoLog.operate();
+
+            //操作者身份
+            String identify=autoLog.identify();
+
+            //操作时间
+            Date time=new Date();
+            Timestamp operatetime = new Timestamp(time.getTime());
+
+            HttpServletRequest request= ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+            //操作ip
+            String ip=getIp(request);
+
+            //操作姓名
+            String userid="";
+            Claims claims = null;
+            String token = request.getHeader("token");
+            if(token!=null)
+            {
+                claims=JwtUtils.parseJWT(token);
+                userid=claims.get("username", String.class);
+            }
+            else
+            {
+                token= (String) result.getData();
+                claims=JwtUtils.parseJWT(token);
+                userid=claims.get("username", String.class);
+            }
+
+            OperationLog operationLog=new OperationLog(null,userid,identify,operate,ip,operatetime);
+            logService.addlog(operationLog);
 
             return result;
         }
