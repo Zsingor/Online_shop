@@ -12,7 +12,7 @@
       <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
       <el-table-column prop="img" label="图片" align="center">
         <template #default="scope">
-          <img :src=getImageUrl(scope.row.img) height="200"/>
+          <img :src="$baseUrl+`/download/${scope.row.img}`" height="200"/>
         </template>
       </el-table-column>
       <el-table-column property="name" label="类目" width="180" align="center"></el-table-column>
@@ -71,10 +71,6 @@ const handleDelete=(index)=> {
   tableData.value.splice(index, 1); //删除表格的数据
   localStorage.removeItem("goods")
   localStorage.setItem("goods", JSON.stringify(tableData.value))
-}
-
-const getImageUrl = (name) => {
-  return new URL(name, import.meta.url).href
 }
 
 //返回上级页面

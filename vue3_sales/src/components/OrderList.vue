@@ -2,7 +2,14 @@
   <div>
     <p class="toptext">订单信息</p>
     <div class="searchinputdiv">
-      <el-input class="searchinput" :prefix-icon="Search" v-model="search" placeholder="请输入查询用户"></el-input>
+      <el-input class="searchinput" v-model="search" placeholder="请输入关键字搜索" size="large">
+        <template #prepend>
+          <el-select v-model="searchflag" style="width: 110px" placeholder="请选择" size="large">
+            <el-option label="用户名" value="0"></el-option>
+            <el-option label="商品编号" value="1"></el-option>
+          </el-select>
+        </template>
+      </el-input>
       <el-button class="searchbtn" type="primary" @click="select">查询</el-button>
       <el-button class="searchbtn" type="danger" @click="cancel">取消</el-button>
     </div>
@@ -62,6 +69,8 @@ var tableData=ref([])
 var tableShow=ref([])
 //存储原始的时间戳
 var tableTime=ref([])
+//搜索的类别
+var searchflag=ref("0");
 
 // 点击分页组件会返回页码， 根据页码更新dataShow数据(显示的项目)
 const handleCurrentChange=(val)=>{
@@ -140,9 +149,18 @@ const selectsalesorder=()=>{
 
 const select=()=>{
   tableRef.value.clearFilter();
-  tableShow.value=tableData.value.filter(data => {
-    return (!search.value || data.username.toString().toLowerCase().includes(search.value.toLowerCase()))
-  })
+  if(searchflag.value==="0")
+  {
+    tableShow.value=tableData.value.filter(data => {
+      return (!search.value || data.username.toString().toLowerCase().includes(search.value.toLowerCase()))
+    })
+  }
+  else
+  {
+    tableShow.value=tableData.value.filter(data => {
+      return (!search.value || data.goodsid.toString().toLowerCase().includes(search.value.toLowerCase()))
+    })
+  }
   tabletotal.value=tableShow.value.length
 }
 
