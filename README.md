@@ -48,7 +48,7 @@
 
 ### 一、后端
 
-1. 解决跨域请求的配置文件（disposition/CorsConfig）
+1. 解决跨域请求的配置文件（disposition/CorsConfig.java）
 
    ```java
    @Configuration
@@ -71,7 +71,7 @@
    }
    ```
 
-2. 登录校验的令牌生成与解析文件（utility/JwtUtils）
+2. 登录校验的令牌生成与解析文件（utility/JwtUtils.java）
 
    ```java
    public class JwtUtils {
@@ -102,7 +102,7 @@
    }
    ```
    
-3. 过滤器（filter）的设置（utility/LoginCheckFilter）
+3. 过滤器（filter）的设置（utility/LoginCheckFilter.java）
 
    ```java
    @WebFilter(urlPatterns = "/*")
@@ -186,6 +186,81 @@
    }
    ```
 
+4.操作日志自定义接口实现（/utility/LogAspect.java）
+
+```java
+@Component
+@Aspect
+//处理AOP的处理器
+public class LogAspect {
+    @Autowired
+    private LogService logService;
+
+    @Around("@annotation(autoLog)")
+    public Object doAround(ProceedingJoinPoint joinPoint,AutoLog autoLog)throws Throwable{
+        try {
+            //执行具体的接口
+            Result result=(Result) joinPoint.proceed();
+
+            //操作内容
+            String operate=autoLog.operate();
+
+            //操作者身份
+            String identify=autoLog.identify();
+
+            //操作时间
+            Date time=new Date();
+            Timestamp operatetime = new Timestamp(time.getTime());
+
+            HttpServletRequest request= ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+            //操作ip
+            String ip=getIp(request);
+
+            //操作姓名
+            String userid="";
+            Claims claims = null;
+            String token = request.getHeader("token");
+            if(token!=null)
+            {
+                claims=JwtUtils.parseJWT(token);
+                userid=claims.get("username", String.class);
+            }
+            else
+            {
+                token= (String) result.getData();
+                claims=JwtUtils.parseJWT(token);
+                userid=claims.get("username", String.class);
+            }
+
+            OperationLog operationLog=new OperationLog(null,userid,identify,operate,ip,operatetime);
+            logService.addlog(operationLog);
+
+            return result;
+        }
+        catch (Exception error)
+        {
+            System.out.println(error);
+            return Result.error("日志信息添加失败");
+        }
+    }
+
+    //用于获取用户的准确ip
+    private String getIp(HttpServletRequest request) {
+        List<String> ipHeadList = Stream.of("X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "X-Real-IP").toList();
+        for (String ipHead : ipHeadList) {
+            if (checkIP(request.getHeader(ipHead))) {
+                return request.getHeader(ipHead).split(",")[0];
+            }
+        }
+        return "0:0:0:0:0:0:0:1".equals(request.getRemoteAddr()) ? "127.0.0.1" : request.getRemoteAddr();
+    }
+
+    private boolean checkIP(String ip) {
+        return !(null == ip || ip.isEmpty() || "unknown".equalsIgnoreCase(ip));
+    }
+}
+```
+
 
 
 ### 二、前端
@@ -193,11 +268,9 @@
 1. 请求信息的配置（utility/request.js)
 
    ```js
-   import axios from "axios";
-   
    //创建一个新的axios对象
    const request=axios.create({
-       baseURL:process.env.VUE_APP_BSAEURL, //后端的ip地址
+       baseURL:import.meta.env.VITE_BASE_API, //后端的ip地址
        timeout:30000 //响应时间
    })
    
@@ -205,11 +278,9 @@
    // 可以在请求发送前对请求做一些处理
    request.interceptors.request.use(config=>{
        config.headers['Content-Type']='application/json;charset=utf-8';
-       //获取浏览器中存储的令牌
-       let token=JSON.parse(localStorage.getItem("managertoken"))
+       let token=JSON.parse(localStorage.getItem("usertoken"))
        if(token)
        {
-           //让发送请求中携带令牌
            config.headers['token']=token
        }
        return config
@@ -234,22 +305,20 @@
    
    export default request
    ```
-
-2. 项目端口即发送配置（vue.config.js）
+   
+2. 项目端口即发送配置（vite.config.js）
 
    ```js
-   const { defineConfig } = require('@vue/cli-service')
-   module.exports = defineConfig({
-     transpileDependencies: true,
-     devServer:{
-       //配置界面使用的端口号
-       port:7001,
-       //配置发送请求的ip地址
-       proxy: {
-         '/api': {
-           target: process.env.VUE_APP_BSAEURL,
-           changeOrigin: true
-         }
+   export default defineConfig({
+     plugins: [
+       vue(),
+     ],
+     server: {
+       port: 5101,
+     },
+     resolve: {
+       alias: {
+         '@': fileURLToPath(new URL('./src', import.meta.url))
        }
      }
    })
@@ -273,9 +342,11 @@
 
    ![导航栏](images/导航栏.png)
 
-4. 主页交互，可从轮播图左侧的菜单栏或是下方主页商品展示区的查看全部进入商品展示页，也可以直接点击下方商品展示区的商品图片进入商品详情页，进行下一步操作。
+4. 主页交互，可从轮播图左侧的菜单栏或是下方主页商品展示区的查看全部进入商品展示页，也可以直接点击下方的商品推荐区或商品展示区的商品图片进入商品详情页，进行下一步操作。
 
    ![主页轮播区](images/主页轮播区.png)
+
+   <img src="images/主页商品推荐.png" alt="主页商品推荐" style="zoom:80%;" />
 
    ![主页商品展示](images/主页商品展示.png)
 
@@ -319,7 +390,7 @@
 
    ![订单信息](images/订单信息.png)
 
-5. 销售报表信息界面交互，在该界面中，销售人员可以看到每天销售情况的统计，包括当天的用户购买次数，用户购买的商品总数以及购买总价即当天的销售额，并且在该界面的下方还有图表显示，可以让销售员更直观地观察每天销售额的变化。
+5. 销售报表信息界面交互，在该界面中，销售人员可以看到每天销售情况的统计，包括当天的用户购买次数，用户购买的商品总数以及购买总价即当天的销售额，并且在该界面的下方还有图表显示，可以让销售员更直观地观察各商品类别的销售状况。
 
    ![销售报表界面](images/销售报表界面.png)
 
@@ -327,13 +398,45 @@
 
 
 
+### 三、管理员界面
+
+在管理员后台管理界面中，商品信息，订单信息商品销售界面与销售员后台管理界面基本相同，只是数据有所变化，销售员仅能查看和自己所负责商品有关的信息，但管理员可以查看所有商品的信息。
+
+1.管理员可查看的界面
+
+<img src="images/管理员可浏览界面.png" alt="管理员可浏览界面" style="zoom:80%;" />
+
+2.每日销售界面， 管理员可以查看每日的商品销售信息，并且通过表格下方的折线图进行可视化分析。
+
+<img src="images/每日销售界面_1.png" alt="每日销售界面_1"  />
+
+<img src="images/每日销售界面_2.png" alt="每日销售界面_2"  />
+
+3.销售人员的信息管理界面，管理者可以在此对销售人员的信息进行添加，口令重置等操作。
+
+![销售人员_信息管理](images/销售人员_信息管理.png)
+
+4.销售人员的销售业绩界面，管理者可在此查看各个销售人员的销售业绩，并结合下方的柱状图进行可视化分析。
+
+![销售人员_销售业绩](images/销售人员_销售业绩.png)
+
+5.操作日志界面，管理员可在此查看用户，销售人员，管理者的操作日志。
+
+![操作日志](images/操作日志.png)
+
+6.浏览日志，记录每个用户对商品的浏览时间，便于确定用户画像并为用户推荐相应的商品。
+
+![浏览日志](images/浏览日志.png)
+
+
+
 ## 五、注意事项
 
-1. 顾客的用户名是唯一的，无法更改与同名，仅在注册时可设置，其余信息包括邮箱、密码等均可后续在个人中心中更改。销售的用户名也是唯一的，但销售的账户仅做登录验证使用，无法修改信息，但是可注销。
+1. 顾客的用户名是唯一的，无法更改与同名，仅在注册时可设置，其余信息包括邮箱、密码等均可后续在个人中心中更改。销售及管理员的用户名也是唯一的，但销售的账户仅做登录验证使用，无法修改信息，但是可注销。
 2. 登录验证的有效期是 **24** 小时，超过24小时候需要重新登录。
 3. 服务器的运行日期为从 **2024/5/9** 开始的两个月，超出这段时间后网站将无法被访问，直到将来再配置服务器。
 4. 商品的编号作为商品的唯一标识符，无法重复和被修改，仅可在添加商品时设置。
 5. 商品的图片为商品的主展示图，其余的相关图片，例如顾客界面的商品详情页中的轮播图和详情图均为系统默认。
 6. 顾客界面主页的轮播图仅为展示用，无法进行页面跳转，且轮播区左侧的菜单栏的跳转连接均为统一界面。
-7. 首次操作顾客界面进入购物车界面的时候可能会有些许的卡顿，可以先切去其它界面再切回来或者刷新界面。
-8. 在界面加载商品图片遇到加载不出来的问题时，可以选择等待一会或是刷新界面来解决。
+7. 在界面加载商品图片遇到加载不出来的问题时，可以选择等待一会或是刷新界面来解决。
+8. 受服务器性能的限制，部分界面或者图片的加载可能会有些许迟缓，属正常现象，等待一会即可。
