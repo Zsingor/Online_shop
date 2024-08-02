@@ -46,7 +46,6 @@ public class FileController {
     public void downloads(@PathVariable String fileName, HttpServletResponse response) throws IOException
     {
         String filePath=ROOT_PATH+File.separator+fileName;
-        System.out.println(filePath);
         if(!FileUtil.exist(filePath))
         {
             return;
@@ -58,7 +57,7 @@ public class FileController {
         outputStream.close();
     }
 
-    @PostMapping("/deletefile/{fileName}")
+    @PostMapping("deletefile/{fileName}")
     public void deleteFile(@PathVariable String fileName){
         File dest = new File(ROOT_PATH +File.separator+ fileName);
         if(dest.exists())
